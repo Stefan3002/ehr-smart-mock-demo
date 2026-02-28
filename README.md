@@ -70,4 +70,6 @@ All further FHIR requests must include:
 ------------------------------------------------------------------------
 
 ## 4. Screenshots
+<img width="2913" height="2000" alt="Screenshot from 2026-02-28 02-53-46" src="https://github.com/user-attachments/assets/5fae3f47-1a10-46b5-94f2-259b17dae427" />
+<img width="871" height="907" alt="image" src="https://github.com/user-attachments/assets/cd244fed-b369-4b44-8480-f4af860bff21" />
 
