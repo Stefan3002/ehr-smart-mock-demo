@@ -1,3 +1,12 @@
+const updateFrontend = (probability, lastPoll) => {
+    if(probability != null) {
+        const riskDOM = document.querySelector("#risk-container");
+        riskDOM.textContent = probability
+    }
+    const timeDOM = document.querySelector("#time-container");
+    timeDOM.textContent = heartAttackObj.lastPoll
+}
+
 function computeAge(birthDate) {
     // birthDate is "YYYY-MM-DD"
     if (!birthDate || typeof birthDate !== "string") return null;
@@ -97,10 +106,62 @@ async function onPredictClick(demoMode = true) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(features),
     });
-
+    heartAttackObj.lastPoll = 0
     const prediction = await res.json();
-    // console.log("Prediction:", prediction);
+    // Print the risk in frontend
+    const probabilityPercentage = (prediction.result.probability * 100).toFixed(2);
+    updateFrontend(probabilityPercentage, heartAttackObj.lastPoll);
     console.dir(prediction, { depth: null });
+}
+
+const startPoll = (pollRate = 3000) => {
+    console.log("Attempting to start poll...");
+
+    if (heartAttackObj.pollIntervalId !== null) {
+        console.log("Poll already running. Not starting another interval.");
+        return;
+    }
+
+    measureTime()
+    console.log("Starting poll with pollRate:", pollRate);
+    heartAttackObj.pollIntervalId = setInterval(() => {
+        console.log("Interval triggered at", new Date().toISOString());
+        onPredictClick();
+    }, pollRate);
+};
+
+const stopPoll = () => {
+    if (heartAttackObj.pollIntervalId !== null) {
+        clearInterval(heartAttackObj.pollIntervalId);
+        heartAttackObj.pollIntervalId = null;
+        console.log("Polling stopped.");
+    }
+    // if (heartAttackObj.measureTimeIntervalId !== null) {
+    //     clearInterval(heartAttackObj.measureTimeIntervalId);
+    //     heartAttackObj.measureTimeIntervalId = null;
+    //     console.log("Measure time stopped.");
+    // }
+};
+
+(function attachListeners() {
+    document.querySelector("#start-poll-btn").addEventListener("click", () => startPoll())
+    document.querySelector("#stop-poll-btn").addEventListener("click", () => stopPoll())
+})()
+
+const measureTime = () => {
+    if (heartAttackObj.measureTimeIntervalId !== null) {
+        console.log("Measure time already running. Not starting another interval.");
+        return;
+    }
+    heartAttackObj.measureTimeIntervalId = setInterval(() => {
+        heartAttackObj.lastPoll += 1;
+        updateFrontend(null, heartAttackObj.lastPoll);
+    }, 1000);
+}
+const heartAttackObj = {
+    pollIntervalId: null, // Store interval ID globally
+    measureTimeIntervalId: null, // Store measureTime interval ID globally
+    lastPoll: 0, // Track seconds since last poll
 }
 
 window.adapter = onPredictClick

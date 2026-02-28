@@ -28,7 +28,7 @@
         window.patientId = patientId;
         window.accessToken = accessToken;
 
-        window.adapter()
+        await window.adapter()
     } catch (e) {
         console.log("Not in SMART launch context, or SMART handshake failed;");
         console.error(e);

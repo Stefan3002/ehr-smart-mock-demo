@@ -3,13 +3,34 @@
 <head>
     <meta charset="utf-8" />
     <title>SMART Plain JS Demo</title>
+    <script src="https://cdn.jsdelivr.net/npm/fhirclient/build/fhir-client.js" ></script>
+    <script src="./app.js"></script>
+    <script src="./fhir-adapter.js" defer></script>
+    <link rel="stylesheet" href="widget.css">
 </head>
 <body>
-
 <!-- SMART JS client (UMD build) -->
-<script src="https://cdn.jsdelivr.net/npm/fhirclient/build/fhir-client.js" ></script>
 
-<script src="./app.js"></script>
-<script src="./fhir-adapter.js" defer></script>
+
+<section class='widget module'>
+    <div class="widget-header">
+        <p class="widget-name">Heart Attack Risk</p>
+        <div class='divider'>
+            ┈┈・୨ ✦ ୧・┈┈
+        </div>
+    </div>
+    <div class="widget-content">
+        <p class="widget-description">Predicts heart attack risk based on age, sex, trestbps, chol</p>
+        <button class="widget-button" id="start-poll-btn">Start polling</button>
+        <button class="widget-button" id="stop-poll-btn">Stop polling</button>
+    </div>
+    <section class="widget-footer">
+        <p>Risk of heart attack is: <span id="risk-container"></span>%</p>
+        <p>Last checked: <span id="time-container"></span>s ago</p>
+    </section>
+
+</section>
+
+
 </body>
 </html>
