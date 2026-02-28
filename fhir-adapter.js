@@ -101,7 +101,7 @@ async function onPredictClick(demoMode = true) {
     console.log(features)
 
     // Send only the minimal feature vector to your model backend
-    const res = await fetch("http://localhost:8000/predict/heart-attack/", {
+    const res = await fetch(heartAttackObj.predictorsURL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(features),
@@ -158,10 +158,43 @@ const measureTime = () => {
         updateFrontend(null, heartAttackObj.lastPoll);
     }, 1000);
 }
+
+const checkHealth = async () => {
+    const currentVersion = heartAttackObj.version
+    const url = heartAttackObj.healthCheckURL;
+    try {
+        const res = await fetch(url, {headers: {"Content-Type": "application/json"}, method: "POST", body: JSON.stringify({ version: currentVersion })});
+        if (!res.ok && res.status !== 426) {
+            throw new Error(`Health request failed (${res.status} ${res.statusText}): ${url}`);
+        }
+        const resJson = await res.json();
+        const healthStatusDom = document.querySelector("#health-status");
+
+        if (resJson.status !== "ok") {
+            healthStatusDom.textContent = `UNHEALTHY (latest version: ${resJson.version || "unknown"}, current: ${currentVersion})`;
+            healthStatusDom.style.color = "red";
+            heartAttackObj.fhirAdapter = () => {}
+            throw new Error(`Model health check failed: ${resJson.status}`);
+        }
+        else{
+            healthStatusDom.textContent = `HEALTHY (version: ${currentVersion})`;
+            healthStatusDom.style.color = "green";
+        }
+    }
+    catch (error) {
+        console.error("Health check error:", error);
+    }
+}
+
 const heartAttackObj = {
     pollIntervalId: null, // Store interval ID globally
     measureTimeIntervalId: null, // Store measureTime interval ID globally
     lastPoll: 0, // Track seconds since last poll
+    version: "1.0.1", // Version info for health checking
+    fhirAdapter: onPredictClick, // Expose the main function for external calls
+    healthCheck: checkHealth, // Expose health check function
+    predictorsURL: "http://localhost:8000/predict/heart-attack/", // URL for model predictions
+    healthCheckURL: "http://localhost:8001/api/health/heart-attack", // URL for model predictions
 }
 
-window.adapter = onPredictClick
+window.heartAttackObj = heartAttackObj

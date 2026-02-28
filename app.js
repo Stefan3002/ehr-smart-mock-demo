@@ -28,7 +28,8 @@
         window.patientId = patientId;
         window.accessToken = accessToken;
 
-        await window.adapter()
+        await window.heartAttackObj.healthCheck()
+        await window.heartAttackObj.fhirAdapter()
     } catch (e) {
         console.log("Not in SMART launch context, or SMART handshake failed;");
         console.error(e);

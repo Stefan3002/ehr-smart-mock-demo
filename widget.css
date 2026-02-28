@@ -47,6 +47,9 @@
     padding: .2rem;
     margin: 0;
 }
+#health-status {
+    font-weight: bold;
+}
 .widget-button {
     text-align: left;
     padding: .3rem 0.3rem;
